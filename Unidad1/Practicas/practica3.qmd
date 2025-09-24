@@ -1,0 +1,151 @@
+---
+title: "Práctica 3: Introducción al Polimorfismo"
+subtitle: "Simulación de Sistema de Cobro y Alertas Multicanal"
+author: "Diego Fernando Frias Ramirez"
+date: today
+format: 
+  html: default
+  pdf:
+    documentclass: article
+    geometry: 
+      - top=1.2in
+      - bottom=1.2in
+      - left=1in
+      - right=1in
+    fontsize: 12pt
+    mainfont: "Times New Roman"
+    colorlinks: true
+    linkcolor: blue
+    urlcolor: blue
+    citecolor: blue
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    highlight-style: github
+    code-block-bg: "#f8f9fa"
+    code-block-border-left: "#007acc"
+    fig-cap-location: bottom
+    tbl-cap-location: top
+    header-includes: |
+      \usepackage{fancyhdr}
+      \pagestyle{fancy}
+      \fancyhead[L]{Práctica 3 - POO}
+      \fancyhead[R]{Diego Fernando}
+      \fancyfoot[C]{\thepage}
+      \usepackage{xcolor}
+      \definecolor{codebackground}{HTML}{f8f9fa}
+      \definecolor{codeborder}{HTML}{007acc}
+execute:
+  echo: true
+  eval: false
+  warning: false
+  message: false
+jupyter: python3
+---
+
+# Introducción
+
+Esta práctica introduce el concepto de **Polimorfismo** en Programación Orientada a Objetos.  
+Se simula un sistema de cobro con múltiples opciones de pago y un sistema de alertas multicanal.  
+El polimorfismo permite que diferentes clases implementen un mismo método (`procesar_pago` o `enviar_alerta`) con comportamientos distintos.
+
+---
+
+# Sistema de Cobro con Múltiples Opciones de Pago
+
+Se crean varias clases que representan diferentes formas de pago. Cada clase tiene un método `procesar_pago(cantidad)` que simula la transacción.
+
+```{python}
+#| eval: true
+class pago_tarjeta:
+    def procesar_pago(self, cantidad):  
+        return f"Procesando pago de ${cantidad} con tarjeta bancaria"
+    
+class transferencia:
+    def procesar_pago(self, cantidad):  
+        return f"Procesando pago con transferencia por la cantidad de ${cantidad}"
+    
+class deposito:
+    def procesar_pago(self, cantidad):  
+        return f"Procesando pago por medio de deposito en ventanilla por ${cantidad}"
+    
+class paypal:
+    def procesar_pago(self, cantidad):  
+        return f"Procesando pago de ${cantidad} por medio de Paypal"
+
+# Instancias y cantidades de ejemplo
+pagos = [
+    (pago_tarjeta(), 100),
+    (transferencia(), 500),
+    (paypal(), 2000),
+    (deposito(), 400)
+]
+
+# Procesar cada pago usando polimorfismo
+for m, cantidad in pagos:
+    print(m.procesar_pago(cantidad))
+```
+
+**Explicación:**  
+- Cada clase implementa su propio método `procesar_pago`.  
+- Todas las clases pueden usarse de manera intercambiable en la lista `pagos`.  
+- Esto demuestra polimorfismo: un mismo método con distintos comportamientos según la clase.
+
+---
+
+# Sistema de Alertas Multicanal
+
+Se crean clases para diferentes canales de alerta, cada una con un método `enviar_alerta(contenido)` que actúa de forma específica según el canal.
+
+```{python}
+#| eval: true
+class AlertaCorreo:
+    def enviar_alerta(self, contenido):
+        return f"[Correo] Alerta enviada: '{contenido}'"
+
+class AlertaSMS:
+    def enviar_alerta(self, contenido):
+        return f"[SMS] Alerta enviada: '{contenido}'"
+
+class AlertaTelegram:
+    def enviar_alerta(self, contenido):
+        return f"[Telegram] Alerta enviada: '{contenido}'"
+
+class AlertaNotificacionPush:
+    def enviar_alerta(self, contenido):
+        return f"[Push] Alerta enviada: '{contenido}'"
+
+# Lista de canales con sus mensajes
+canales_alerta = [
+    (AlertaCorreo(), "Factura disponible para descargar"),
+    (AlertaSMS(), "Código de verificación: 84219"),
+    (AlertaTelegram(), "Tienes una nueva respuesta en el foro"),
+    (AlertaNotificacionPush(), "Recordatorio: reunión en 10 minutos")
+]
+
+# Enviar alertas usando polimorfismo
+for canal, contenido in canales_alerta:
+    print(canal.enviar_alerta(contenido))
+```
+
+**Explicación:**  
+- Cada clase tiene su propio comportamiento para `enviar_alerta`.  
+- Las alertas se procesan de manera uniforme a través de un bucle.  
+- Esto permite agregar nuevos canales sin modificar el flujo principal del programa.
+
+---
+
+# Conceptos Aplicados
+
+- **Polimorfismo:** diferentes clases implementan el mismo método con comportamientos distintos.  
+- **Listas de objetos:** se utilizan para procesar múltiples instancias de manera uniforme.  
+- **Modularidad:** cada clase encapsula su comportamiento específico.  
+- **Flexibilidad:** se pueden agregar nuevos métodos de pago o canales de alerta sin cambiar la estructura del código existente.
+
+---
+
+# Conclusiones
+
+- El polimorfismo permite escribir código más flexible y reutilizable.  
+- Los sistemas de pago y alertas muestran cómo una interfaz común puede ser implementada de distintas maneras.  
+- Facilita la extensión de programas grandes sin modificar el flujo principal.  

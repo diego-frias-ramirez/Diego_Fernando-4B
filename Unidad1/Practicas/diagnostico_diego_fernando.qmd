@@ -1,0 +1,193 @@
+---
+title: "Diagnóstico: Simulador de Pedidos"
+subtitle: "Conceptos Básicos de Programación en Python"
+author: "Diego Fernando Frias Ramirez"
+date: today
+format: 
+  html: default
+  pdf:
+    documentclass: article
+    geometry: 
+      - top=1.2in
+      - bottom=1.2in
+      - left=1in
+      - right=1in
+    fontsize: 12pt
+    mainfont: "Times New Roman"
+    colorlinks: true
+    linkcolor: blue
+    urlcolor: blue
+    citecolor: blue
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    highlight-style: github
+    code-block-bg: "#f8f9fa"
+    code-block-border-left: "#007acc"
+    fig-cap-location: bottom
+    tbl-cap-location: top
+    header-includes: |
+      \usepackage{fancyhdr}
+      \pagestyle{fancy}
+      \fancyhead[L]{Diagnóstico - Simulador}
+      \fancyhead[R]{Diego Fernando}
+      \fancyfoot[C]{\thepage}
+      \usepackage{xcolor}
+      \definecolor{codebackground}{HTML}{f8f9fa}
+      \definecolor{codeborder}{HTML}{007acc}
+execute:
+  echo: true
+  eval: false
+  warning: false
+  message: false
+jupyter: python3
+---
+
+## Introducción al Proyecto
+
+Este proyecto es un **simulador de pedidos para una cafetería** que implementa conceptos fundamentales de programación en Python. El sistema permite a los usuarios realizar pedidos de productos, calcular totales y generar un resumen de compra personalizado.
+
+### Conceptos de Programación Implementados
+
+- **Variables y estructuras de datos**: Listas para almacenar productos, precios y cantidades
+- **Entrada y salida de datos**: Input/output del usuario con `input()` y `print()`
+- **Funciones**: Modularización del código con funciones reutilizables  
+- **Bucles**: Iteración sobre listas para procesar múltiples elementos
+- **Operaciones matemáticas**: Cálculo de totales y subtotales
+
+---
+
+## Definición de Productos y Precios
+
+Establecemos el catálogo de productos de nuestra cafetería utilizando listas paralelas para organizar la información de manera eficiente.
+
+```{python}
+#| eval: true
+# Diagnostico_diego_fernando.py
+# Simulador de pedidos
+# Conceptos básicos: variables, inputs, condicionales, funciones y bucles
+
+# Elegir una temática de tienda y escribir 3 productos
+productos = ["Latte", "Capuchino", "Americano"]
+precios = [50, 70, 40]
+```
+
+**¿Qué hace este código?**
+Crea dos listas paralelas: una con los nombres de las bebidas disponibles (`productos`) y otra con los precios correspondientes (`precios`). El índice conecta cada producto con su precio respectivo.
+
+---
+
+## Función de Cálculo de Total
+
+Implementamos la lógica de negocio principal: calcular el total de la compra basándose en las cantidades solicitadas y los precios unitarios.
+
+```{python}
+#| eval: true
+# Función para calcular el total
+def calcular_total(cantidades, precios):
+    total = 0
+    for i in range(len(cantidades)):
+        total += cantidades[i] * precios[i]
+    return total
+```
+
+**¿Qué hace este código?**
+Define una función que recibe dos parámetros (`cantidades` y `precios`), inicializa una variable `total` en 0, utiliza un bucle para iterar sobre los índices, multiplica cantidad por precio para cada producto, suma al total acumulado y retorna el valor final calculado.
+
+---
+
+## Interfaz de Usuario y Procesamiento de Pedidos
+
+Creamos la interfaz de usuario que muestra el menú, recolecta información del cliente y procesa el pedido completo.
+
+```{python}
+#| eval: false
+# Menú para usuario (Outputs)
+print("Menú de cafetería - ¡Bienvenido!")
+nombre = input("Ingresa tu nombre: ")
+
+cantidades = []
+
+for i in range(len(productos)):
+    print(f"{i + 1}. {productos[i]} - $ {precios[i]}")
+    cantidad = int(input(f"¿Cuántos {productos[i]} desea?: "))
+    cantidades.append(cantidad)
+
+total = calcular_total(cantidades, precios)
+
+print(f"\nGracias por tu compra, {nombre}. El total a pagar es: ${total}")
+```
+
+**¿Qué hace este código?**
+Muestra un mensaje de bienvenida, solicita el nombre del cliente, inicializa una lista vacía `cantidades`, itera sobre cada producto mostrando su información (número, nombre, precio), solicita al usuario la cantidad deseada de cada producto, convierte la entrada a entero y la agrega a la lista, llama a la función `calcular_total()` para obtener el costo total, y finalmente muestra un mensaje personalizado con el nombre del cliente y el total a pagar.
+
+---
+
+## Ejemplo de Ejecución
+
+Cuando ejecutes este código, la interacción será similar a:
+
+```
+Menú de cafetería - ¡Bienvenido!
+Ingresa tu nombre: Diego Fernando
+1. Latte - $ 50
+¿Cuántos Latte desea?: 2
+2. Capuchino - $ 70
+¿Cuántos Capuchino desea?: 1
+3. Americano - $ 40
+¿Cuántos Americano desea?: 0
+
+Gracias por tu compra, Diego Fernando. El total a pagar es: $170
+```
+
+**Análisis del ejemplo:**
+- 2 Lattes × $50 = $100
+- 1 Capuchino × $70 = $70  
+- 0 Americanos × $40 = $0
+- **Total: $170**
+
+---
+
+## Conceptos Fundamentales Aplicados
+
+### Variables y Listas
+- `productos` y `precios`: Listas paralelas para organizar datos relacionados
+- `cantidades`: Lista dinámica que se construye durante la ejecución
+- `total`: Variable acumuladora para el cálculo final
+
+### Estructuras de Control
+- `for` loop: Iteración sobre elementos de las listas
+- `range(len())`: Generación de índices para recorrer listas paralelas
+
+### Funciones
+- `calcular_total()`: Función pura que recibe parámetros y retorna un resultado
+- Modularización del código para mejor organización y reutilización
+
+### Entrada y Salida
+- `input()`: Captura de datos del usuario con conversión de tipos
+- `print()`: Salida formateada con f-strings para mejor presentación
+
+---
+
+## Conclusiones
+
+Este simulador demuestra la implementación práctica de conceptos fundamentales de programación:
+
+### Conceptos Implementados
+1. **Organización de datos** mediante listas paralelas
+2. **Modularización** a través de funciones específicas  
+3. **Interacción con el usuario** mediante entrada y salida de datos
+4. **Lógica de negocio** con cálculos matemáticos
+5. **Control de flujo** usando bucles para procesar múltiples elementos
+
+### Fortalezas del Código
+- Estructura clara y fácil de entender
+- Uso efectivo de listas paralelas
+- Función bien definida para cálculos
+- Interfaz de usuario intuitiva
+
+### Posibles Mejoras
+- Validación de entrada de datos (números negativos, texto en lugar de números)
+- Manejo de errores para entradas inválidas  
+- Opción para modificar pedidos antes de finalizar
+- Cálculo de subtotales por producto

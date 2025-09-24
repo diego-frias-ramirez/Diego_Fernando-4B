@@ -1,0 +1,154 @@
+---
+title: "Práctica 2: Atributos Públicos y Privados"
+subtitle: "Programación Orientada a Objetos en Python"
+author: "Diego Fernando Frias Ramirez"
+date: today
+format: 
+  html: default
+  pdf:
+    documentclass: article
+    geometry: 
+      - top=1.2in
+      - bottom=1.2in
+      - left=1in
+      - right=1in
+    fontsize: 12pt
+    mainfont: "Times New Roman"
+    colorlinks: true
+    linkcolor: blue
+    urlcolor: blue
+    citecolor: blue
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    highlight-style: github
+    code-block-bg: "#f8f9fa"
+    code-block-border-left: "#007acc"
+    fig-cap-location: bottom
+    tbl-cap-location: top
+    header-includes: |
+      \usepackage{fancyhdr}
+      \pagestyle{fancy}
+      \fancyhead[L]{Práctica 2 - POO}
+      \fancyhead[R]{Diego Fernando}
+      \fancyfoot[C]{\thepage}
+      \usepackage{xcolor}
+      \definecolor{codebackground}{HTML}{f8f9fa}
+      \definecolor{codeborder}{HTML}{007acc}
+execute:
+  echo: true
+  eval: false
+  warning: false
+  message: false
+jupyter: python3
+---
+
+# Introducción
+
+En esta práctica trabajamos el concepto de **atributos públicos y privados** en la **Programación Orientada a Objetos (POO)** con Python.  
+Se presentan dos clases principales:
+
+- `Persona`: modela un individuo con atributos básicos y la asociación a una cuenta bancaria.  
+- `cuenta_bancaria`: representa una cuenta con saldo y operaciones (depósito y retiro).
+
+El objetivo es mostrar cómo los atributos privados (prefijados con `__`) ayudan a proteger datos sensibles y a forzar el uso de métodos para acceder o modificar dichos datos.
+
+---
+
+# Clase `Persona`
+
+La clase `Persona` contiene atributos públicos (`nombre`, `edad`) y un atributo privado `__cuenta`.  
+Incluye métodos para presentarse, cumplir años, asignar una cuenta y consultar el saldo asociado.
+
+```{python}
+# Practica 2 Atributos publicos y privados 
+class Persona:
+    def __init__(self, nombre, edad):  # Constructor
+        self.nombre = nombre          # Atributo público
+        self.edad = edad              # Atributo público
+        self.__cuenta = None          # Atributo privado
+
+    def Presentarse(self):
+        print(f"Hola, mi nombre es {self.nombre} y mi edad es {self.edad}")
+    
+    def cumplir_anios(self):
+        self.edad += 1
+        print(f"Esta persona cumplió {self.edad} años")
+
+    def asignar_cuenta(self, cuenta):
+        self.__cuenta = cuenta
+        print(f"{self.nombre} ahora tiene una cuenta bancaria")
+
+    def consulatar_saldo(self):
+        if self.__cuenta:
+            print(f"El saldo de {self.nombre} es ${self.__cuenta.mostrar_saldo()}")
+        else:
+            print(f"{self.nombre} aun no tiene una cuenta bancaria ")
+```
+
+---
+
+# Clase `cuenta_bancaria`
+
+```{python}
+class cuenta_bancaria:
+    
+    def __init__(self, num_cuenta, saldo): 
+        self.num_cuenta = num_cuenta
+        self.__saldo = saldo # Atributo privado
+
+    def mostrar_saldo(self):
+        return self.__saldo
+    
+    def depositar(self, cantidad):
+        if cantidad > 0:
+            self.__saldo += cantidad
+            print(f"Se deposito la cantidad de ${cantidad} a la cuenta, nuevo saldo es ${self.__saldo}")
+        else:
+            print("Ingresa una cantidad valida")
+
+    def retirar(self, cantidad):
+        print(f"El saldo de la cuenta es ${self.__saldo}")
+        if cantidad > 0 and cantidad <= self.__saldo:
+            self.__saldo -= cantidad
+            print(f"Se retiró ${cantidad} de la cuenta, nuevo saldo es ${self.__saldo}")
+        else:
+            print("Cantidad inválida o fondos insuficientes")
+```
+
+---
+
+# Creación de objetos y flujo de ejemplo
+
+```{python}
+# Crear un objeto o instancia de la clase
+perosna1 = Persona("Miguel", 20)
+cuenta1 = cuenta_bancaria("001", 500)
+
+perosna1.asignar_cuenta(cuenta1)
+perosna1.consulatar_saldo()
+
+cuenta1.depositar(200)
+cuenta1.retirar(100)
+```
+
+---
+
+# Ejemplo de salida (consola)
+
+```
+Miguel ahora tiene una cuenta bancaria
+El saldo de Miguel es $500
+Se deposito la cantidad de $200 a la cuenta, nuevo saldo es $700
+El saldo de la cuenta es $700
+Se retiró $100 de la cuenta, nuevo saldo es $600
+```
+
+---
+
+# Conclusiones
+
+- **Atributos públicos:** accesibles desde fuera.  
+- **Atributos privados:** protegidos con doble guion bajo.  
+- **Encapsulamiento:** se controla el acceso mediante métodos.  
+- **Relación entre clases:** `Persona` tiene una referencia a una `cuenta_bancaria`.  

@@ -1,0 +1,160 @@
+---
+title: "Práctica 5: Patrones de Diseño (Singleton)"
+subtitle: "Programación Orientada a Objetos en Python"
+author: "Diego Fernando Frias Ramirez"
+date: today
+format:
+  html: default
+  pdf:
+    documentclass: article
+    geometry:
+      - top=1.2in
+      - bottom=1.2in
+      - left=1in
+      - right=1in
+    fontsize: 12pt
+    mainfont: "Times New Roman"
+    colorlinks: true
+    linkcolor: blue
+    urlcolor: blue
+    citecolor: blue
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    highlight-style: github
+    code-block-bg: "#f8f9fa"
+    code-block-border-left: "#007acc"
+    fig-cap-location: bottom
+    tbl-cap-location: top
+    header-includes: |
+      \usepackage{fancyhdr}
+      \pagestyle{fancy}
+      \fancyhead[L]{Práctica 5 - Patrones}
+      \fancyhead[R]{Diego Fernando}
+      \fancyfoot[C]{\thepage}
+      \usepackage{xcolor}
+      \definecolor{codebackground}{HTML}{f8f9fa}
+      \definecolor{codeborder}{HTML}{007acc}
+execute:
+  echo: true
+  eval: false
+  warning: false
+  message: false
+jupyter: python3
+---
+
+## Introducción
+
+En esta práctica se estudia el **patrón de diseño Singleton**, que garantiza que una clase tenga **una única instancia** durante la ejecución del programa.  
+Se presentan dos ejemplos prácticos: un **Logger** (registro de eventos) y la clase **Presidente** (demostración del efecto del singleton sobre estado compartido).
+
+Se sigue el formato de las prácticas anteriores: explicación por secciones, bloques de código encapsulados para Quarto, y análisis apuntando a los conceptos aplicados.
+
+---
+
+## Ejemplo 1 — Logger (Singleton)
+
+```{python}
+#| eval: true
+class Logger:
+    _instancia = None  # Guardará la única instancia
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instancia is None:
+            cls._instancia = super().__new__(cls)
+            # Abrimos un archivo en modo append para simular un log.
+            # Nota: en renderizado automático este bloque puede NO ejecutarse
+            # si Quarto tiene eval: false (ver encabezado). Aquí queda listo para ejecutar.
+            cls._instancia.archivo = open("app.log", "a", encoding="utf-8")
+        return cls._instancia
+
+    def log(self, mensaje):
+        self.archivo.write(mensaje + "\n")
+        self.archivo.flush()
+
+# Uso de Logger
+Logger1 = Logger()
+Logger2 = Logger()
+
+Logger1.log("Inicio de sesión en la aplicación.")
+Logger2.log("El usuario se autenticó correctamente.")
+
+print("Logger1 is Logger2 ->", Logger1 is Logger2)
+```
+
+**¿Qué hace este bloque?**  
+- `__new__` controla la creación de la instancia.  
+- Si no existe `_instancia`, se crea y se abre `app.log` en modo append.  
+- Todas las referencias (`Logger1`, `Logger2`) apuntan al mismo objeto.
+
+**Notas prácticas:** al renderizar en un servidor o en Quarto, el bloque de código puede dejar de ejecutarse si `eval: false` está activo. Si deseas que se ejecute localmente y cree `app.log`, cambia `eval` a `true` en el encabezado global o en el chunk.
+
+---
+
+## Ejemplo 2 — Presidente (Singleton con estado compartido)
+
+```{python}
+#| eval: true
+class Presidente:
+    _instancia = None
+
+    def __new__(cls, nombre):
+        if cls._instancia is None:
+            cls._instancia = super().__new__(cls)
+            cls._instancia.nombre = nombre
+            cls._instancia.historial = []
+        return cls._instancia
+
+    def accion(self, accion):
+        evento = f"{self.nombre} {accion}"
+        self.historial.append(evento)
+        print(evento)
+
+# Demostración
+p1 = Presidente("AMLO")
+p1.accion("firmó decreto")
+
+p2 = Presidente("Peña Nieto")
+p2.accion("visitó España")
+
+p3 = Presidente("Fox")
+p3.accion("aprobó un presupuesto")
+
+print("\nHistorial (desde p1):", p1.historial)
+print("p1 is p2 is p3 ->", p1 is p2 is p3)
+```
+
+**Análisis:**  
+- Aunque se pasan distintos nombres al constructor, sólo la primera llamada define `nombre`.  
+- Todas las variables referencian la misma instancia; su historial es compartido.
+
+---
+
+## Preguntas y respuestas (análisis)
+
+1. **¿Qué pasaría si quitamos la verificación `if cls._instancia is None:` en `__new__`?**  
+   - Se crearían nuevas instancias en cada llamada, rompiendo el patrón Singleton.
+
+2. **¿Qué significa `p1 is p2 is p3 == True`?**  
+   - Que todas las variables apuntan exactamente al mismo objeto en memoria.
+
+3. **¿Debo usar Singleton para todo lo "global"?**  
+   - No. Úsalo sólo cuando realmente necesites una única instancia (logs, configuración). Abusar del patrón puede dificultar pruebas y generar acoplamientos innecesarios.
+
+---
+
+## Buenas prácticas y mejoras
+
+- Cerrar el archivo del Logger al terminar (añadir método `close()` o usar `atexit`).  
+- Evitar side-effects en `__new__` (por ejemplo, abrir archivos) si se busca pureza para pruebas.  
+- Considerar alternativas testables (inyección de dependencias, fábricas) cuando se necesite mayor flexibilidad.
+
+---
+
+## Conclusión
+
+El patrón Singleton es útil para compartir recursos únicos en una aplicación, pero debe aplicarse con cuidado. Los ejemplos muestran su funcionamiento y las implicaciones de mantener estado compartido.
+
+---
+
+# Fin

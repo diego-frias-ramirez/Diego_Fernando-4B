@@ -1,0 +1,173 @@
+---
+title: "Práctica 6: Patrones de Diseño (Factory y Observer)"
+subtitle: "Programación Orientada a Objetos en Python"
+author: "Diego Fernando Frias Ramirez"
+date: today
+format:
+  html: default
+  pdf:
+    documentclass: article
+    geometry:
+      - top=1.2in
+      - bottom=1.2in
+      - left=1in
+      - right=1in
+    fontsize: 12pt
+    mainfont: "Times New Roman"
+    colorlinks: true
+    linkcolor: blue
+    urlcolor: blue
+    citecolor: blue
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    highlight-style: github
+    code-block-bg: "#f8f9fa"
+    code-block-border-left: "#007acc"
+    fig-cap-location: bottom
+    tbl-cap-location: top
+    header-includes: |
+      \usepackage{fancyhdr}
+      \pagestyle{fancy}
+      \fancyhead[L]{Práctica 6 - Patrones}
+      \fancyhead[R]{Diego Fernando}
+      \fancyfoot[C]{\thepage}
+      \usepackage{xcolor}
+      \definecolor{codebackground}{HTML}{f8f9fa}
+      \definecolor{codeborder}{HTML}{007acc}
+execute:
+  echo: true
+  eval: false
+  warning: false
+  message: false
+jupyter: python3
+---
+
+# Introducción
+
+En esta práctica se implementan los patrones de diseño **Factory Method** y **Observer**, aplicados al sistema de pedidos en línea.  
+Estos patrones permiten **desacoplar** la creación de objetos y **notificar** automáticamente a componentes interesados cuando ocurre un evento.
+
+# Patrón Factory Method
+
+El patrón *Factory Method* nos permite crear objetos sin especificar la clase exacta de cada producto.  
+En este caso, se aplica para crear diferentes tipos de **productos del menú** (Café, Snack, Postre).
+
+```python
+from abc import ABC, abstractmethod
+
+# Producto base
+class Producto(ABC):
+    @abstractmethod
+    def descripcion(self):
+        pass
+
+# Clases concretas
+class Cafe(Producto):
+    def descripcion(self):
+        return "Café"
+
+class Snack(Producto):
+    def descripcion(self):
+        return "Snack"
+
+class Postre(Producto):
+    def descripcion(self):
+        return "Postre"
+
+# Fábrica base
+class FabricaProductos(ABC):
+    @abstractmethod
+    def crear_producto(self):
+        pass
+
+# Fábricas concretas
+class FabricaCafe(FabricaProductos):
+    def crear_producto(self):
+        return Cafe()
+
+class FabricaSnack(FabricaProductos):
+    def crear_producto(self):
+        return Snack()
+
+class FabricaPostre(FabricaProductos):
+    def crear_producto(self):
+        return Postre()
+
+# Uso del patrón Factory
+fabrica = FabricaCafe()
+producto = fabrica.crear_producto()
+print(producto.descripcion())  # Café
+```
+
+# Patrón Observer
+
+El patrón *Observer* permite que un objeto (sujeto) **notifique automáticamente** a múltiples observadores cuando cambia su estado.  
+Aquí se aplica para notificar a los clientes cuando el **estado de su pedido** cambia.
+
+```python
+# Sujeto
+class Pedido:
+    def __init__(self):
+        self._observadores = []
+        self.estado = "Pendiente"
+
+    def agregar_observador(self, observador):
+        self._observadores.append(observador)
+
+    def notificar(self):
+        for observador in self._observadores:
+            observador.actualizar(self.estado)
+
+    def cambiar_estado(self, nuevo_estado):
+        self.estado = nuevo_estado
+        self.notificar()
+
+# Observador
+class Cliente:
+    def __init__(self, nombre):
+        self.nombre = nombre
+
+    def actualizar(self, estado):
+        print(f"Notificación para {self.nombre}: El estado de tu pedido cambió a '{estado}'.")
+
+# Uso del patrón Observer
+pedido = Pedido()
+cliente1 = Cliente("Diego")
+cliente2 = Cliente("Ana")
+
+pedido.agregar_observador(cliente1)
+pedido.agregar_observador(cliente2)
+
+pedido.cambiar_estado("En preparación")
+pedido.cambiar_estado("En camino")
+pedido.cambiar_estado("Entregado")
+```
+
+# Menú con Factory y Observer
+
+Combinando ambos patrones:
+
+```python
+# Crear pedido con productos usando Factory
+fabrica_postre = FabricaPostre()
+fabrica_cafe = FabricaCafe()
+
+pedido = Pedido()
+pedido.agregar_observador(Cliente("Diego"))
+pedido.agregar_observador(Cliente("Ana"))
+
+producto1 = fabrica_postre.crear_producto()
+producto2 = fabrica_cafe.crear_producto()
+
+print(f"Pedido incluye: {producto1.descripcion()} y {producto2.descripcion()}")
+
+pedido.cambiar_estado("En preparación")
+pedido.cambiar_estado("Listo para entrega")
+```
+
+# Conclusiones
+
+- El patrón **Factory Method** permitió crear productos del menú de forma flexible y escalable.  
+- El patrón **Observer** facilitó la notificación automática de cambios de estado a los clientes.  
+- Ambos patrones juntos logran un sistema de pedidos en línea **más modular, reutilizable y mantenible**.

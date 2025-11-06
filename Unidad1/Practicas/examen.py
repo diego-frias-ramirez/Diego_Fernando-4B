@@ -1,0 +1,177 @@
+
+from datetime import datetime, timedelta
+
+class Libro:
+    def __init__(self, titulo, autor, año, codigo, disponible=True):
+        self.titulo = titulo
+        self.autor = autor
+        self.año = año
+        self.codigo = codigo
+        self.disponible = disponible
+
+    def mostrar_info(self):
+        info = (f"Libro: {self.titulo} | Autor: {self.autor} | Año: {self.año} | "
+                f"Código: {self.codigo} | Disponible: {self.disponible}")
+        print(info)
+
+    def marcar_como_prestado(self):
+        if not self.disponible:
+            print(f"AVISO: El libro '{self.titulo}' ya está prestado.")
+            return False
+        self.disponible = False
+        print(f"El libro '{self.titulo}' fue marcado como PRESTADO.")
+        return True
+
+    def marcar_como_disponible(self):
+        if self.disponible:
+            print(f"AVISO: El libro '{self.titulo}' ya está disponible.")
+            return False
+        self.disponible = True
+        print(f"El libro '{self.titulo}' fue marcado como DISPONIBLE.")
+        return True
+
+
+class Usuario:
+    def __init__(self, nombre, id_usuario, correo):
+        self.nombre = nombre
+        self.id_usuario = id_usuario
+        self.correo = correo
+
+    def mostrar_info(self):
+        print(f"Usuario: {self.nombre} | ID: {self.id_usuario} | Correo: {self.correo}")
+
+    def solicitar_prestamo(self, libro, prestamos_activos_list):
+        print(f"\\n{self.nombre} solicita el libro '{libro.titulo}' ...")
+        prestamo = Prestamo(libro, self, fecha_prestamo=datetime.now(), fecha_devolucion=None)
+        registrado = prestamo.registrar_prestamo(prestamos_activos_list)
+        if registrado:
+            return prestamo
+        return None
+
+
+class Estudiante(Usuario):
+    def __init__(self, nombre, id_usuario, correo, carrera, semestre):
+        super().__init__(nombre, id_usuario, correo)
+        self.carrera = carrera
+        self.semestre = semestre
+
+    def mostrar_info(self):
+        print(f"Estudiante: {self.nombre} | ID: {self.id_usuario} | Correo: {self.correo} | "
+              f"Carrera: {self.carrera} | Semestre: {self.semestre}")
+
+
+class Profesor(Usuario):
+    def __init__(self, nombre, id_usuario, correo, departamento, tipo_contrato):
+        super().__init__(nombre, id_usuario, correo)
+        self.departamento = departamento
+        self.tipo_contrato = tipo_contrato
+
+    def mostrar_info(self):
+        print(f"Profesor: {self.nombre} | ID: {self.id_usuario} | Correo: {self.correo} | "
+              f"Departamento: {self.departamento} | Tipo contrato: {self.tipo_contrato}")
+
+
+class Prestamo:
+    def __init__(self, libro, usuario, fecha_prestamo, fecha_devolucion=None):
+        self.libro = libro
+        self.usuario = usuario
+        self.fecha_prestamo = fecha_prestamo
+        self.fecha_devolucion = fecha_devolucion
+        self.registrado = False
+
+    def registrar_prestamo(self, lista_prestamos_activos):
+        if not self.libro.disponible:
+            print(f"ERROR: No se puede registrar préstamo. El libro '{self.libro.titulo}' no está disponible.")
+            return False
+
+        marcado = self.libro.marcar_como_prestado()
+        if not marcado:
+            return False
+
+        self.fecha_devolucion = self.fecha_prestamo + timedelta(days=14)
+        self.registrado = True
+        lista_prestamos_activos.append(self)
+        print(f"Préstamo registrado: '{self.libro.titulo}' -> {self.usuario.nombre}. Fecha devolución estimada: {self.fecha_devolucion.date()}")
+        return True
+
+    def devolver_libro(self, lista_prestamos_activos):
+        if not self.registrado:
+            print("AVISO: Este préstamo no estaba registrado.")
+            return False
+
+        marcado = self.libro.marcar_como_disponible()
+        if not marcado:
+            pass
+
+        fecha_real = datetime.now()
+        self.fecha_devolucion = fecha_real
+        self.registrado = False
+
+        if self in lista_prestamos_activos:
+            lista_prestamos_activos.remove(self)
+
+        print(f"Devolución completada: '{self.libro.titulo}' devuelto por {self.usuario.nombre} en {self.fecha_devolucion}.")
+        return True
+
+    def mostrar_info(self):
+        estado = "Activo" if self.registrado else "Finalizado"
+        print(f"Préstamo: Libro='{self.libro.titulo}' | Usuario='{self.usuario.nombre}' | "
+              f"Fecha préstamo: {self.fecha_prestamo} | Fecha devolución (estimada/real): {self.fecha_devolucion} | Estado: {estado}")
+
+
+def simulacion():
+    print("\\n" + "="*10 + " INICIO SIMULACIÓN SISTEMA BIBLIOTECA (POO) " + "="*10 + "\\n")
+
+    libro1 = Libro("Introducción a la Programación", "A. Autor", 2018, "LB001", disponible=True)
+    libro2 = Libro("Estructuras de Datos", "B. Autor", 2020, "LB002", disponible=True)
+    libro3 = Libro("Bases de Datos", "C. Autor", 2019, "LB003", disponible=True)
+
+    print("=== Libros disponibles originalmente ===")
+    for lb in (libro1, libro2, libro3):
+        lb.mostrar_info()
+
+    est1 = Estudiante("DIego frias", "E001", "ana.lopez@uni.edu.mx", "Sistemas", 4)
+    est2 = Estudiante("Carlos Ruiz", "E002", "carlos.ruiz@uni.edu.mx", "Contaduría", 2)
+
+    prof1 = Profesor("Dr. Martín Pérez", "P001", "martin.perez@uni.edu.mx", "Ciencias", "Contrato por hora")
+    prof2 = Profesor("Mtra. Laura Gómez", "P002", "laura.gomez@uni.edu.mx", "Ingeniería", "Tiempo completo")
+
+    print("\\n=== Información de usuarios (polimorfismo) ===")
+    usuarios = [est1, est2, prof1, prof2]
+    for u in usuarios:
+        u.mostrar_info()
+
+    prestamos_activos = []
+
+    prestamo1 = est1.solicitar_prestamo(libro1, prestamos_activos)
+    print("\\n=== Estado libros tras primer préstamo ===")
+    libro1.mostrar_info()
+    libro2.mostrar_info()
+
+    prestamo_conflict = prof1.solicitar_prestamo(libro1, prestamos_activos)
+    prestamo2 = prof1.solicitar_prestamo(libro2, prestamos_activos)
+
+    print("\\n=== Préstamos activos actualmente ===")
+    for p in prestamos_activos:
+        p.mostrar_info()
+
+    if prestamo1:
+        print("\\n--- Devolución del primer préstamo ---")
+        prestamo1.devolver_libro(prestamos_activos)
+
+    print("\\n=== Estado final de libros ===")
+    for lb in (libro1, libro2, libro3):
+        lb.mostrar_info()
+
+    print("\\n=== Préstamos activos finales ===")
+    if prestamos_activos:
+        for p in prestamos_activos:
+            p.mostrar_info()
+    else:
+        print("No hay préstamos activos. Todos los libros están devueltos o no hay préstamos registrados.")
+
+    print("\\n" + "="*10 + " FIN SIMULACIÓN " + "="*10 + "\\n")
+
+
+if __name__ == "__main__":
+    simulacion()

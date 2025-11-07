@@ -39,19 +39,6 @@ class ProductsView:
         
         tk.Button(
             top_frame,
-            text="Volver a Usuarios",
-            font=("Segoe UI", 10),
-            bg="#95a5a6",
-            fg="white",
-            relief="flat",
-            cursor="hand2",
-            command=self.volver_usuarios,
-            padx=20,
-            pady=8
-        ).pack(side="right", padx=10)
-        
-        tk.Button(
-            top_frame,
             text="Cerrar Sesión",
             font=("Segoe UI", 10),
             bg="#e74c3c",
@@ -59,6 +46,32 @@ class ProductsView:
             relief="flat",
             cursor="hand2",
             command=self.logout,
+            padx=20,
+            pady=8
+        ).pack(side="right", padx=10)
+        
+        tk.Button(
+            top_frame,
+            text="Dashboard",
+            font=("Segoe UI", 10),
+            bg="#27ae60",  # Verde como pediste
+            fg="white",
+            relief="flat",
+            cursor="hand2",
+            command=self.ir_dashboard,
+            padx=20,
+            pady=8
+        ).pack(side="right", padx=10)
+        
+        tk.Button(
+            top_frame,
+            text="Usuarios",
+            font=("Segoe UI", 10),
+            bg="#95a5a6",
+            fg="white",
+            relief="flat",
+            cursor="hand2",
+            command=self.volver_usuarios,
             padx=20,
             pady=8
         ).pack(side="right", padx=10)
@@ -72,10 +85,10 @@ class ProductsView:
         btn_frame.pack(fill="x", pady=(0, 20))
         
         buttons = [
-            ("➕ Agregar Producto", "#27ae60", self.add_product),
-            ("✏️ Actualizar Producto", "#f39c12", self.edit_product),
-            ("🗑️ Eliminar Producto", "#e74c3c", self.delete_product),
-            ("🔄 Actualizar Lista", "#3498db", self.load_products)
+            (" Agregar Producto", "#27ae60", self.add_product),
+            (" Actualizar Producto", "#f39c12", self.edit_product),
+            (" Eliminar Producto", "#e74c3c", self.delete_product),
+            (" Actualizar Lista", "#3498db", self.load_products)
         ]
         
         for text, color, cmd in buttons:
@@ -193,6 +206,15 @@ class ProductsView:
             new_root = tk.Tk()
             LoginView(new_root)
             new_root.mainloop()
+    
+    def ir_dashboard(self):
+        self.product_controller.close()
+        self.root.destroy()
+        
+        from dashboard_view import DashboardView
+        new_root = tk.Tk()
+        DashboardView(new_root, self.username)
+        new_root.mainloop()
     
     def on_closing(self):
         self.product_controller.close()

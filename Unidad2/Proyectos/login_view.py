@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from auth_controller import AuthController
-from user_view import UserView
+from dashboard_view import DashboardView  
 
 class LoginView:
     def __init__(self, root):
@@ -117,9 +117,9 @@ class LoginView:
             self.auth_controller.close()
             self.root.destroy()
             
-            # Nueva ventana con el nombre de usuario
+            # Nueva ventana con el nombre de usuario → Dashboard
             new_root = tk.Tk()
-            UserView(new_root, user_data['username'])
+            DashboardView(new_root, user_data['username'])
             new_root.mainloop()
         else:
             messagebox.showerror("Error", message)

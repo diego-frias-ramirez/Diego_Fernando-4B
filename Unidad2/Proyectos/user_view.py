@@ -52,9 +52,22 @@ class UserView:
         
         tk.Button(
             top_frame,
-            text="Ir a Productos",
+            text="Dashboard",
             font=("Segoe UI", 10),
-            bg="#9b59b6",
+            bg="#27ae60",  # Verde como pediste
+            fg="white",
+            relief="flat",
+            cursor="hand2",
+            command=self.ir_dashboard,
+            padx=20,
+            pady=8
+        ).pack(side="right", padx=10)
+        
+        tk.Button(
+            top_frame,
+            text="Productos",
+            font=("Segoe UI", 10),
+            bg="#3498db",
             fg="white",
             relief="flat",
             cursor="hand2",
@@ -72,10 +85,10 @@ class UserView:
         btn_frame.pack(fill="x", pady=(0, 20))
         
         buttons = [
-            ("➕ Agregar", "#27ae60", self.add_user),
-            ("✏️ Modificar", "#f39c12", self.edit_user),
-            ("🗑️ Eliminar", "#e74c3c", self.delete_user),
-            ("🔄 Actualizar", "#3498db", self.load_users)
+            (" Agregar", "#27ae60", self.add_user),
+            (" Modificar", "#f39c12", self.edit_user),
+            (" Eliminar", "#e74c3c", self.delete_user),
+            (" Actualizar", "#3498db", self.load_users)
         ]
         
         for text, color, cmd in buttons:
@@ -175,6 +188,15 @@ class UserView:
         from products_view import ProductsView
         new_root = tk.Tk()
         ProductsView(new_root, self.username)
+        new_root.mainloop()
+    
+    def ir_dashboard(self):
+        self.user_controller.close()
+        self.root.destroy()
+        
+        from dashboard_view import DashboardView
+        new_root = tk.Tk()
+        DashboardView(new_root, self.username)
         new_root.mainloop()
     
     def on_closing(self):
